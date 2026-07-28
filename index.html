@@ -5,30 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Maze Escape Pro - Victory UI</title>
   <style>
-    /* Styling untuk Header agar logo di kanan */
-.header-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 15px;
-  padding: 0 5px;
-}
-
-.game-logo-img {
-  width: 60px; /* Atur ukuran logo sesuai keinginan */
-  height: 60px;
-  border-radius: 8px;
-  border: 2px solid #38bdf8;
-  object-fit: cover;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
-}
-
-.title-text {
-  font-size: 1.5rem;
-  color: #ff7b72;
-  text-shadow: 0 0 10px rgba(255, 123, 114, 0.4);
-}
     * {
       box-sizing: border-box;
       margin: 0;
@@ -57,12 +33,48 @@
       width: 100%;
     }
 
-    h1 {
-      font-size: 1.8rem;
+    /* Header & Logo Styling */
+    .header-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 0 5px;
+    }
+
+    .title-text {
+      font-size: 1.5rem;
       color: #ff7b72;
-      margin-bottom: 12px;
       text-shadow: 0 0 10px rgba(255, 123, 114, 0.4);
-      text-align: center;
+    }
+
+    /* Ukuran logo diperkecil di sini */
+    .game-logo-img {
+      width: 40px; 
+      height: 40px;
+      border-radius: 8px;
+      border: 2px solid #38bdf8;
+      object-fit: cover;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+    }
+
+    /* Logo Gallery Styling */
+    .logo-gallery {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    .logo-item img {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      object-fit: cover;
+      display: block;
     }
 
     /* Top Stats Bar */
@@ -178,7 +190,7 @@
       border-radius: 50%;
     }
 
-    /* D-Pad Virtual untuk HP */
+    /* D-Pad Virtual */
     .dpad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -235,7 +247,7 @@
     .btn-settings { background: #334155; }
     .btn-settings:hover { background: #475569; }
 
-    /* LAYAR VICTORY / SELESAI FINISH */
+    /* LAYAR VICTORY */
     .victory-overlay {
       position: absolute;
       top: 0;
@@ -322,35 +334,24 @@
   </style>
 </head>
 <body>
+
 <div class="main-wrapper">
-    <div class="main-wrapper">
-
-  <div class="main-wrapper">
-    <div class="header-wrapper">
-      <h1 class="title-text">Maze Escape Pro</h1>
-      <img src="images/logoku.jpg" alt="Main Logo" class="game-logo-img">
-    </div>
-
-    <p>Selamat! Anda Berhasil!</p>
+  <!-- Header Game -->
+  <div class="header-wrapper">
+    <h1 class="title-text">⚡ Maze Escape Pro ⚡</h1>
+    <img src="images/logoku.jpg" alt="Main Logo" class="game-logo-img">
   </div>
 
-<div class="game-wrapper">
-    <!-- LOGO GALLERY -->
-    <div class="logo-gallery">
-        <div class="logo-item"><img src="1.jpeg" alt="Logo 1"></div>
-        <div class="logo-item"><img src="2.jpeg" alt="Logo 2"></div>
-        <div class="logo-item" style="border: 2px solid #ffd700;"><img src="lgo.jpeg" alt="Logo Utama"></div>
-        <div class="logo-item"><img src="3.jpeg" alt="Logo 3"></div>
-        <div class="logo-item"><img src="smk.jpg" alt="Logo 4"></div>
-    </div>
-
-  <!-- Statistik bar dan sisa kode lainnya tetap sama... -->
-  <div class="stats-bar">
-    MAINKAN GAME INI DENGAN BERBAGAI RINTANGANNYA
+  <!-- Galeri Logo Kecil (Opsional) -->
+  <div class="logo-gallery">
+    <div class="logo-item"><img src="1.jpeg" alt="Logo 1"></div>
+    <div class="logo-item"><img src="2.jpeg" alt="Logo 2"></div>
+    <div class="logo-item" style="border: 2px solid #ffd700; border-radius: 6px;"><img src="lgo.jpeg" alt="Logo Utama"></div>
+    <div class="logo-item"><img src="3.jpeg" alt="Logo 3"></div>
+    <div class="logo-item"><img src="smk.jpg" alt="Logo 4"></div>
   </div>
-</div>
-  <h1>⚡ MAZE ESCAPE PRO ⚡</h1>
 
+  <!-- Stats Bar -->
   <div class="stats-bar">
     <div>Lvl: <span id="level-display">1/5</span></div>
     <div>Skor: <span id="score-display">0</span></div>
@@ -388,10 +389,11 @@
     </div>
   </div>
 
+  <!-- Container Arena Game -->
   <div class="game-container">
     <div id="maze"></div>
 
-    <!-- OVERLAY TAMPILAN SETELAH FINISH -->
+    <!-- Victory Overlay -->
     <div class="victory-overlay" id="victoryScreen">
       <div class="trophy-icon">🏆</div>
       <div class="victory-title">MISI SELESAI!</div>
@@ -406,7 +408,7 @@
     </div>
   </div>
 
-  <!-- Virtual D-Pad untuk Layar HP -->
+  <!-- Virtual D-Pad -->
   <div class="dpad">
     <div class="dpad-empty"></div>
     <button class="dpad-btn" onclick="movePlayer(-1, 0)">▲</button>
@@ -416,6 +418,7 @@
     <button class="dpad-btn" onclick="movePlayer(0, 1)">►</button>
   </div>
 
+  <!-- Control Buttons -->
   <div class="controls">
     <button class="btn-action btn-music" id="music-btn" onclick="toggleMusic()">🎵 Musik: OFF</button>
     <button class="btn-action btn-settings" onclick="toggleSettings()">⚙️ Setting</button>
@@ -844,7 +847,7 @@
         currentLevel++;
         initGame();
       } else {
-        // PERMAINAN SELESAI (FINISH)
+        // PERMAINAN SELESAI
         clearInterval(timerInterval);
         clearInterval(hazardInterval);
 
