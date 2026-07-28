@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Maze Escape Pro - Victory UI</title>
+  <style>
+    /* Styling untuk Header agar logo di kanan */
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 0 5px;
+}
+
+.game-logo-img {
+  width: 60px; /* Atur ukuran logo sesuai keinginan */
+  height: 60px;
+  border-radius: 8px;
+  border: 2px solid #38bdf8;
+  object-fit: cover;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.title-text {
+  font-size: 1.5rem;
+  color: #ff7b72;
+  text-shadow: 0 0 10px rgba(255, 123, 114, 0.4);
+}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      touch-action: manipulation;
+    }
+
+    body {
+      background-color: #0d1117;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .main-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 450px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: #ff7b72;
+      margin-bottom: 12px;
+      text-shadow: 0 0 10px rgba(255, 123, 114, 0.4);
+      text-align: center;
+    }
+
+    /* Top Stats Bar */
+    .stats-bar {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .stats-bar span { color: #58a6ff; }
+    .hearts { color: #ff7b72; }
+
+    .timer-warning {
+      color: #ff7b72 !important;
+      animation: pulse 0.5s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 1; }
+      to { opacity: 0.4; }
+    }
+
+    /* Panel Setting Audio Internal */
+    .settings-panel {
+      background: #161b22;
+      border: 1px solid #38bdf8;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      width: 100%;
+      display: none;
+    }
+
+    .settings-panel.active {
+      display: block;
+    }
+
+    .setting-item {
+      margin-bottom: 10px;
+    }
+
+    .setting-item:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+      color: #cbd5e1;
+    }
+
+    select, input[type="range"] {
+      width: 100%;
+      background: #0d1117;
+      color: #fff;
+      border: 1px solid #30363d;
+      padding: 6px;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    /* Board Container */
+    .game-container {
+      position: relative;
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    #maze {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-template-rows: repeat(10, 1fr);
+      gap: 2px;
+      background: #21262d;
+      width: 100%;
+      max-width: 380px;
+      aspect-ratio: 1 / 1;
+    }
+
+    /* Grid Cells */
+    .cell {
+      width: 100%;
+      height: 100%;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      user-select: none;
+    }
+
+    .wall { background-color: #0d1117; }
+    .path { background-color: #161b22; }
+    .player { background-color: #161b22; }
+    .hazard { background-color: #161b22; }
+    .finish {
+      background-color: #238636;
+      border-radius: 50%;
+    }
+
+    /* D-Pad Virtual untuk HP */
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      width: 180px;
+      margin-top: 12px;
+    }
+
+    .dpad-btn {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: white;
+      font-size: 1.2rem;
+      padding: 12px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .dpad-btn:active {
+      background: #30363d;
+    }
+
+    .dpad-empty {
+      visibility: hidden;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 10px;
+      background: #238636;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.8rem;
+    }
+
+    .btn-action:hover { background: #2ea043; }
+    .btn-music { background: #1f6beb; }
+    .btn-music:hover { background: #388bfd; }
+    .btn-settings { background: #334155; }
+    .btn-settings:hover { background: #475569; }
+
+    /* LAYAR VICTORY / SELESAI FINISH */
+    .victory-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(13, 17, 23, 0.95);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      border: 2px solid #238636;
+      box-shadow: 0 0 25px rgba(35, 134, 54, 0.6);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .victory-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .trophy-icon {
+      font-size: 4rem;
+      animation: bounce 1s infinite alternate;
+      margin-bottom: 10px;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+
+    .victory-title {
+      font-size: 1.8rem;
+      color: #2ea043;
+      margin-bottom: 8px;
+      font-weight: 800;
+      text-shadow: 0 0 10px rgba(46, 160, 67, 0.5);
+    }
+
+    .victory-sub {
+      color: #8b949e;
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+
+    .final-stats {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin-bottom: 20px;
+      width: 80%;
+    }
+
+    .final-stats div {
+      margin: 6px 0;
+      font-size: 1rem;
+    }
+
+    .btn-play-again {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(35, 134, 54, 0.4);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .btn-play-again:hover {
+      background: #2ea043;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+<div class="top-navbar-wrapper">
+      <div class="external-logos">
+    <img src="images/smk.jpeg" alt="SMK 1 Sanden" class="external-logo-img">
+  </div>
+  <div class="top-navbar-wrapper">
+      <div class="external-logos">
+    <img src="images/smk.jpeg" alt="SMK 1 Sanden" class="external-logo-img">
+    <img src="images/rpl.jpeg" alt="RPL" class="external-logo-img">
+    <img src="images/logoku.jpeg" alt="Revina Game" class="external-logo-img">
+    <img src="images/mk.jpeg" alt="onesad" class="external-logo-img">
+    <img src="images/mk2.jpeg" alt="" class="external-logo-img">
+</div>
+</div>
+  <h1>⚡ MAZE ESCAPE PRO ⚡</h1>
+
+  <div class="stats-bar">
+    <div>Lvl: <span id="level-display">1/5</span></div>
+    <div>Skor: <span id="score-display">0</span></div>
+    <div>Nyawa: <span id="lives-display" class="hearts">❤️❤️❤️</span></div>
+    <div>Waktu: <span id="time-display">30s</span></div>
+  </div>
+
+  <!-- Panel Setting Audio -->
+  <div class="settings-panel" id="settingsPanel">
+    <h3 style="font-size: 0.9rem; margin-bottom: 8px; color: #38bdf8;">⚙️ Pengaturan Audio Real-time</h3>
+
+    <div class="setting-item">
+      <label>Jenis Gelombang Suara
+        <select id="synthType">
+          <option value="triangle">Jernih & Lembut (Triangle)</option>
+          <option value="sine">Murni (Sine)</option>
+          <option value="square">Retro 8-Bit (Square)</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="setting-item">
+      <label>Kejernihan (Treble Boost) <span id="trebleVal">2 dB</span></label>
+      <input type="range" id="trebleGain" min="0" max="10" step="1" value="2">
+    </div>
+
+    <div class="setting-item">
+      <label>Volume Musik (BGM) <span id="bgmVal">80%</span></label>
+      <input type="range" id="bgmVol" min="0" max="1" step="0.05" value="0.8">
+    </div>
+
+    <div class="setting-item">
+      <label>Volume Efek (SFX) <span id="sfxVal">40%</span></label>
+      <input type="range" id="sfxVol" min="0" max="1" step="0.05" value="0.4">
+    </div>
+  </div>
+
+  <div class="game-container">
+    <div id="maze"></div>
+
+    <!-- OVERLAY TAMPILAN SETELAH FINISH -->
+    <div class="victory-overlay" id="victoryScreen">
+      <div class="trophy-icon">🏆</div>
+      <div class="victory-title">MISI SELESAI!</div>
+      <div class="victory-sub">Kamu berhasil menaklukkan semua labirin!</div>
+
+      <div class="final-stats">
+        <div>Total Skor: <strong id="finalScore" style="color: #58a6ff;">0</strong></div>
+        <div>Sisa Nyawa: <strong id="finalLives" class="hearts">❤️❤️❤️</strong></div>
+      </div>
+
+      <button class="btn-play-again" onclick="restartFromVictory()">🎮 Main Lagi</button>
+    </div>
+  </div>
+
+  <!-- Virtual D-Pad untuk Layar HP -->
+  <div class="dpad">
+    <div class="dpad-empty"></div>
+    <button class="dpad-btn" onclick="movePlayer(-1, 0)">▲</button>
+    <div class="dpad-empty"></div>
+    <button class="dpad-btn" onclick="movePlayer(0, -1)">◄</button>
+    <button class="dpad-btn" onclick="movePlayer(1, 0)">▼</button>
+    <button class="dpad-btn" onclick="movePlayer(0, 1)">►</button>
+  </div>
+
+  <div class="controls">
+    <button class="btn-action btn-music" id="music-btn" onclick="toggleMusic()">🎵 Musik: OFF</button>
+    <button class="btn-action btn-settings" onclick="toggleSettings()">⚙️ Setting</button>
+    <button class="btn-action" onclick="restartGame()">🔄 Reset</button>
+  </div>
+</div>
+
+<script>
+  // --- WEB AUDIO API ENGINE ---
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  let audioCtx = null;
+
+  let bgmGainNode = null;
+  let sfxGainNode = null;
+  let filterNode = null;
+
+  let isMusicPlaying = false;
+  let musicTimeout = null;
+  let synthWaveType = 'triangle';
+  let bgmSpeedMs = 250;
+
+  function initAudioEngine() {
+    if (!audioCtx) {
+      audioCtx = new AudioContext();
+
+      bgmGainNode = audioCtx.createGain();
+      sfxGainNode = audioCtx.createGain();
+
+      filterNode = audioCtx.createBiquadFilter();
+      filterNode.type = "highshelf";
+      filterNode.frequency.value = 3000;
+      filterNode.gain.value = parseFloat(document.getElementById('trebleGain').value);
+
+      bgmGainNode.connect(audioCtx.destination);
+      sfxGainNode.connect(audioCtx.destination);
+
+      bgmGainNode.gain.value = parseFloat(document.getElementById('bgmVol').value);
+      sfxGainNode.gain.value = parseFloat(document.getElementById('sfxVol').value);
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function playTone(freq, type, duration, isBGM = false) {
+    if (!audioCtx) return;
+    
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+    osc.connect(gain);
+
+    if (isBGM) {
+      gain.connect(filterNode);
+      filterNode.connect(bgmGainNode);
+    } else {
+      gain.connect(sfxGainNode);
+    }
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  }
+
+  function playMoveSound() { playTone(300, 'square', 0.05, false); }
+  function playHitSound() { playTone(120, 'sawtooth', 0.3, false); }
+  function playWinSound() {
+    if (!audioCtx) return;
+    [400, 523, 659, 783, 1046].forEach((freq, idx) => {
+      setTimeout(() => playTone(freq, 'sine', 0.2, false), idx * 120);
+    });
+  }
+
+  const bgmNotes = [261.63, 293.66, 329.63, 349.23, 392.00, 329.63, 293.66];
+  let noteIndex = 0;
+
+  function runBGMLoop() {
+    if (!isMusicPlaying) return;
+
+    playTone(bgmNotes[noteIndex], synthWaveType, (bgmSpeedMs / 1000) * 0.8, true);
+    noteIndex = (noteIndex + 1) % bgmNotes.length;
+
+    musicTimeout = setTimeout(runBGMLoop, bgmSpeedMs);
+  }
+
+  function toggleMusic() {
+    initAudioEngine();
+    isMusicPlaying = !isMusicPlaying;
+    const btn = document.getElementById('music-btn');
+
+    if (isMusicPlaying) {
+      btn.innerText = '🔊 Musik: ON';
+      runBGMLoop();
+    } else {
+      btn.innerText = '🎵 Musik: OFF';
+      if (musicTimeout) clearTimeout(musicTimeout);
+    }
+  }
+
+  function toggleSettings() {
+    const panel = document.getElementById('settingsPanel');
+    panel.classList.toggle('active');
+  }
+
+  // --- AUDIO CONTROLS LISTENERS ---
+  document.getElementById('bgmVol').addEventListener('input', (e) => {
+    const val = e.target.value;
+    if (bgmGainNode) bgmGainNode.gain.value = val;
+    document.getElementById('bgmVal').innerText = Math.round(val * 100) + '%';
+  });
+
+  document.getElementById('sfxVol').addEventListener('input', (e) => {
+    const val = e.target.value;
+    if (sfxGainNode) sfxGainNode.gain.value = val;
+    document.getElementById('sfxVal').innerText = Math.round(val * 100) + '%';
+  });
+
+  document.getElementById('trebleGain').addEventListener('input', (e) => {
+    const val = e.target.value;
+    if (filterNode) filterNode.gain.value = val;
+    document.getElementById('trebleVal').innerText = val + ' dB';
+  });
+
+  document.getElementById('synthType').addEventListener('change', (e) => {
+    synthWaveType = e.target.value;
+  });
+
+  // --- GAME LOGIC ---
+  const baseLevels = [
+    // Level 1
+    [
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      [1, 1, 1, 0, 1, 0, 1, 1, 0, 1],
+      [1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+      [1, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+      [1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+      [1, 1, 1, 1, 1, 0, 1, 1, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+      [1, 0, 1, 1, 1, 1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 0, 3]
+    ],
+    // Level 2
+    [
+      [0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 0, 1, 1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+      [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1, 0, 1, 1, 0, 1],
+      [1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 0, 3]
+    ],
+    // Level 3
+    [
+      [0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+      [0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+      [0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+      [1, 1, 0, 1, 1, 1, 0, 1, 0, 1],
+      [0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+      [0, 1, 1, 1, 0, 1, 0, 1, 0, 1],
+      [0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+      [1, 1, 0, 1, 1, 1, 0, 1, 0, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 0, 3]
+    ],
+    // Level 4
+    [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+      [0, 1, 1, 1, 1, 1, 1, 0, 1, 0],
+      [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+      [0, 1, 0, 1, 1, 1, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0, 0, 0, 0, 1, 0],
+      [0, 1, 0, 1, 1, 1, 1, 0, 1, 0],
+      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1, 1, 1, 1, 3]
+    ],
+    // Level 5
+    [
+      [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+      [1, 1, 1, 1, 1, 0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+      [0, 1, 1, 1, 1, 1, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 0, 1, 1, 0, 1],
+      [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+      [0, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+      [1, 0, 1, 1, 1, 1, 1, 1, 0, 3]
+    ]
+  ];
+
+  // CONFIGURASI HAZARDS LEVEL
+  const levelHazards = [
+    // Level 1 Hazards
+    [
+      { row: 5, col: 1, dir: 'H', delta: 1, min: 1, max: 5 },
+      { row: 7, col: 1, dir: 'H', delta: 1, min: 1, max: 6 }
+    ],
+    // Level 2 Hazards
+    [
+      { row: 2, col: 1, dir: 'H', delta: 1, min: 1, max: 8 },
+      { row: 4, col: 3, dir: 'H', delta: 1, min: 3, max: 6 },
+      { row: 8, col: 3, dir: 'H', delta: 1, min: 3, max: 8 }
+    ],
+    // Level 3 Hazards
+    [
+      { row: 4, col: 0, dir: 'H', delta: 1, min: 0, max: 4 },
+      { row: 8, col: 0, dir: 'H', delta: 1, min: 0, max: 8 },
+      { row: 0, col: 2, dir: 'V', delta: 1, min: 0, max: 2 }
+    ],
+    // Level 4 Hazards
+    [
+      { row: 2, col: 2, dir: 'H', delta: 1, min: 1, max: 6 },
+      { row: 8, col: 3, dir: 'H', delta: 1, min: 2, max: 6 },
+      { row: 5, col: 7, dir: 'V', delta: 1, min: 4, max: 6 }
+    ],
+    // Level 5 Hazards
+    [
+      { row: 4, col: 1, dir: 'H', delta: 1, min: 0, max: 4 },
+      { row: 6, col: 6, dir: 'H', delta: 1, min: 5, max: 8 },
+      { row: 8, col: 4, dir: 'H', delta: 1, min: 3, max: 8 }
+    ]
+  ];
+
+  let currentLevel = 0;
+  let score = 0;
+  let lives = 3;
+  let time = 30;
+  let timerInterval = null;
+  let hazardInterval = null;
+  let isGameStarted = false;
+
+  let playerPos = { row: 0, col: 0 };
+  let hazards = [];
+
+  const mazeElement = document.getElementById('maze');
+  const levelDisplay = document.getElementById('level-display');
+  const scoreDisplay = document.getElementById('score-display');
+  const livesDisplay = document.getElementById('lives-display');
+  const timeDisplay = document.getElementById('time-display');
+  const victoryScreen = document.getElementById('victoryScreen');
+
+  function initGame() {
+    playerPos = { row: 0, col: 0 };
+    hazards = JSON.parse(JSON.stringify(levelHazards[currentLevel]));
+    bgmSpeedMs = 250;
+    
+    // Hide Victory Overlay
+    victoryScreen.classList.remove('show');
+
+    // Reset Timer State
+    clearInterval(timerInterval);
+    clearInterval(hazardInterval);
+    isGameStarted = false;
+    
+    time = 30;
+    timeDisplay.innerText = `${time}s`;
+    timeDisplay.classList.remove('timer-warning');
+
+    renderMaze();
+    updateStats();
+  }
+
+  function startGameClock() {
+    if (isGameStarted) return;
+    isGameStarted = true;
+
+    timerInterval = setInterval(() => {
+      time--;
+      timeDisplay.innerText = `${time}s`;
+
+      if (time <= 8) {
+        timeDisplay.classList.add('timer-warning');
+        bgmSpeedMs = 130;
+      } else {
+        timeDisplay.classList.remove('timer-warning');
+        bgmSpeedMs = 250;
+      }
+
+      if (time <= 0) {
+        handleTimeOut();
+      }
+    }, 1000);
+
+    hazardInterval = setInterval(() => {
+      moveHazards();
+    }, 350);
+  }
+
+  function handleTimeOut() {
+    playHitSound();
+    lives--;
+    score = Math.max(0, score - 50);
+    alert('⌛ Waktu Habis! Nyawa berkurang 1');
+
+    if (lives <= 0) {
+      alert('💀 Game Over! Mengulang dari Level 1.');
+      currentLevel = 0;
+      lives = 3;
+      score = 0;
+    }
+    initGame();
+  }
+
+  function moveHazards() {
+    const grid = baseLevels[currentLevel];
+
+    hazards.forEach(h => {
+      if (h.dir === 'H') {
+        let nextCol = h.col + h.delta;
+        if (nextCol < h.min || nextCol > h.max || grid[h.row][nextCol] === 1) {
+          h.delta *= -1;
+          nextCol = h.col + h.delta;
+        }
+        h.col = nextCol;
+      } else if (h.dir === 'V') {
+        let nextRow = h.row + h.delta;
+        if (nextRow < h.min || nextRow > h.max || grid[nextRow][h.col] === 1) {
+          h.delta *= -1;
+          nextRow = h.row + h.delta;
+        }
+        h.row = nextRow;
+      }
+
+      if (h.row === playerPos.row && h.col === playerPos.col) {
+        handleHazardHit();
+      }
+    });
+
+    renderMaze();
+  }
+
+  function handleHazardHit() {
+    playHitSound();
+    lives--;
+    score = Math.max(0, score - 50);
+    alert('⚠️ Kena Rintangan! Nyawa berkurang 1');
+
+    if (lives <= 0) {
+      alert('💀 Game Over! Mengulang dari Level 1.');
+      currentLevel = 0;
+      lives = 3;
+      score = 0;
+    }
+    initGame();
+  }
+
+  function updateStats() {
+    levelDisplay.innerText = `${currentLevel + 1}/${baseLevels.length}`;
+    scoreDisplay.innerText = score;
+    livesDisplay.innerText = '❤️'.repeat(lives);
+  }
+
+  function renderMaze() {
+    mazeElement.innerHTML = '';
+    const grid = baseLevels[currentLevel];
+
+    for (let r = 0; r < 10; r++) {
+      for (let c = 0; c < 10; c++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+
+        const isHazard = hazards.some(h => h.row === r && h.col === c);
+
+        if (r === playerPos.row && c === playerPos.col) {
+          cell.classList.add('player');
+          cell.innerText = '🤖';
+        } else if (isHazard) {
+          cell.classList.add('hazard');
+          cell.innerText = '⚠️';
+        } else if (grid[r][c] === 1) {
+          cell.classList.add('wall');
+        } else if (grid[r][c] === 3) {
+          cell.classList.add('finish');
+          cell.innerText = '🏁';
+        } else {
+          cell.classList.add('path');
+        }
+
+        mazeElement.appendChild(cell);
+      }
+    }
+  }
+
+  function movePlayer(dRow, dCol) {
+    if (victoryScreen.classList.contains('show')) return;
+
+    initAudioEngine();
+    startGameClock();
+
+    const newRow = playerPos.row + dRow;
+    const newCol = playerPos.col + dCol;
+
+    if (newRow < 0 || newRow >= 10 || newCol < 0 || newCol >= 10) return;
+
+    const targetCell = baseLevels[currentLevel][newRow][newCol];
+    if (targetCell === 1) return;
+
+    playerPos.row = newRow;
+    playerPos.col = newCol;
+    playMoveSound();
+
+    const hitHazard = hazards.some(h => h.row === newRow && h.col === newCol);
+    if (hitHazard) {
+      handleHazardHit();
+      return;
+    }
+
+    if (targetCell === 3) {
+      playWinSound();
+      score += 300 + (time * 10);
+
+      if (currentLevel < baseLevels.length - 1) {
+        alert(`🎉 Mantap! Level ${currentLevel + 1} Selesai!\nSisa Waktu: ${time}s (+${time * 10} Bonus Skor)`);
+        currentLevel++;
+        initGame();
+      } else {
+        // PERMAINAN SELESAI (FINISH)
+        clearInterval(timerInterval);
+        clearInterval(hazardInterval);
+
+        document.getElementById('finalScore').innerText = score;
+        document.getElementById('finalLives').innerText = '❤️'.repeat(lives);
+
+        setTimeout(() => {
+          victoryScreen.classList.add('show');
+        }, 200);
+      }
+      return;
+    }
+
+    updateStats();
+    renderMaze();
+  }
+
+  function restartFromVictory() {
+    currentLevel = 0;
+    lives = 3;
+    score = 0;
+    initGame();
+  }
+
+  // Keyboard Event Listener
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      e.preventDefault();
+    }
+    switch (e.key) {
+      case 'ArrowUp': movePlayer(-1, 0); break;
+      case 'ArrowDown': movePlayer(1, 0); break;
+      case 'ArrowLeft': movePlayer(0, -1); break;
+      case 'ArrowRight': movePlayer(0, 1); break;
+    }
+  });
+
+  function restartGame() {
+    initGame();
+  }
+
+  initGame();
+</script>
+
+</body>
+</html>
