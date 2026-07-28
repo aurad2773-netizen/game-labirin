@@ -5,30 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Maze Escape Pro - Victory UI</title>
   <style>
+    /* Styling untuk Logo Eksternal agar lebih kecil */
+    .external-logos {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .external-logo-img {
+      width: 32px;  /* Diperkecil dari ukuran sebelumnya */
+      height: 32px; /* Diperkecil dari ukuran sebelumnya */
+      border-radius: 6px;
+      border: 1.5px solid #38bdf8;
+      object-fit: cover;
+      box-shadow: 0 0 5px rgba(56, 189, 248, 0.3);
+    }
+
     /* Styling untuk Header agar logo di kanan */
-.header-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 15px;
-  padding: 0 5px;
-}
+    .header-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 0 5px;
+    }
 
-.game-logo-img {
-  width: 60px; /* Atur ukuran logo sesuai keinginan */
-  height: 60px;
-  border-radius: 8px;
-  border: 2px solid #38bdf8;
-  object-fit: cover;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
-}
+    .game-logo-img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      border: 2px solid #38bdf8;
+      object-fit: cover;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
 
-.title-text {
-  font-size: 1.5rem;
-  color: #ff7b72;
-  text-shadow: 0 0 10px rgba(255, 123, 114, 0.4);
-}
+    .title-text {
+      font-size: 1.5rem;
+      color: #ff7b72;
+      text-shadow: 0 0 10px rgba(255, 123, 114, 0.4);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -322,15 +341,17 @@
   </style>
 </head>
 <body>
-  <div class="top-navbar-wrapper">
-      <div class="external-logos">
+
+<div class="main-wrapper">
+  <!-- Daftar Logo Eksternal yang Diperkecil -->
+  <div class="external-logos">
     <img src="images/smk.jpeg" alt="SMK 1 Sanden" class="external-logo-img">
     <img src="images/rpl.jpeg" alt="RPL" class="external-logo-img">
     <img src="images/logoku.jpeg" alt="Revina Game" class="external-logo-img">
     <img src="images/mk.jpeg" alt="onesad" class="external-logo-img">
     <img src="images/mk2.jpeg" alt="" class="external-logo-img">
-</div>
-</div>
+  </div>
+
   <h1>⚡ MAZE ESCAPE PRO ⚡</h1>
 
   <div class="stats-bar">
